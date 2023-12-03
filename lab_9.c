@@ -290,8 +290,9 @@ IntArray* wrapIntArray(int array[], int size) {
  * @return array with finded exclusive values
  */
 IntArray* filterExclusive(int first[], int firstSize, int second[], int secondSize) {
-    int* result = calloc(0, sizeof(int));
-    int resultSize = 0;
+    int* exclusives = calloc(1, sizeof(int));
+    int size = 0;
+    int threshold = 1;
 
     int value;
 
@@ -299,12 +300,15 @@ IntArray* filterExclusive(int first[], int firstSize, int second[], int secondSi
         value = first[i];
 
         if (!contains(second, secondSize, value)) {
-            result = realloc(result, resultSize + 1);
-            result[resultSize++] = value;
+            if (size == threshold) {
+                exclusives = realloc(exclusives, threshold <<= 1);
+            }
+
+            exclusives[size++] = value;
         }
     }
 
-    return wrapIntArray(result, resultSize);
+    return wrapIntArray(exclusives, size);
 }
 
 /**
