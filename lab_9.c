@@ -46,10 +46,8 @@ void swap(int* first, int* second) {
  * @return "true" if array has dupliciations and "false" otherwise
  */
 bool hasDuplication(int array[], int size) {
-    int value;
-
     for (int i = 0; i < size; ++i) {
-        value = array[i];
+        int value = array[i];
 
         for (int j = i + 1; j < size; j++) {
             if (array[j] == value) return true;
@@ -67,11 +65,8 @@ bool hasDuplication(int array[], int size) {
 void sortDescending(int array[], int size) {
     if (hasDuplication(array, size)) return;
 
-    int offset = 0;
-
     for (int i = 0; i < size; ++i) {
-        swap(array + offset, array + indexOfMax(array, offset, size));
-        offset++;
+        swap(array + i, array + indexOfMax(array, i, size));
     }
 }
 
@@ -82,7 +77,7 @@ void sortDescending(int array[], int size) {
  * @param size array size
  * @return index of min value
  */
-int indexOfMin(int array[], int offset, int size) {
+int positionOfMin(int array[], int offset, int size) {
     int min = array[offset];
     int index = offset;
 
@@ -105,7 +100,7 @@ void sortNotDescending(int array[], int start, int end) {
     int offset = 0;
 
     for (int i = start; i < end; ++i) {
-        swap(array + offset, array + indexOfMin(array, offset, end));
+        swap(array + offset, array + positionOfMin(array, offset, end));
         offset++;
     }
 }
@@ -219,7 +214,7 @@ int geometricMeanIfNotSorted(int array[], int size) {
  * @param value value to be searched
  * @return index of element equal value
  */
-int indexOf(int array[], int size, int value) {
+int binarySearch1(int array[], int size, int value) {
     for (int i = 0; i < size; ++i) {
         if (array[i] == value) {
             return i;
@@ -236,7 +231,7 @@ int indexOf(int array[], int size, int value) {
  * @param value
  */
 void sortNotDescendingAfterValue(int array[], int size, int value) {
-    int valueIndex = indexOf(array, size, value);
+    int valueIndex = binarySearch1(array, size, value);
 
     if (valueIndex != -1) {
         sortNotDescending(array, valueIndex, size);
@@ -244,13 +239,13 @@ void sortNotDescendingAfterValue(int array[], int size, int value) {
 }
 
 /**
- * checks whether array contains value
+ * checks whether array binarySearch2 value
  * @param array array for check
  * @param size array size
  * @param value value for check
- * @return "true" if array contains value and "false" otherwise
+ * @return "true" if array binarySearch2 value and "false" otherwise
  */
-bool contains(int array[], int size, int value) {
+bool binarySearch2(int array[], int size, int value) {
     for (int i = 0; i < size; ++i) {
         if (array[i] == value) return true;
     }
@@ -259,7 +254,7 @@ bool contains(int array[], int size, int value) {
 }
 
 /**
- * contains pointer to first array element and array size
+ * binarySearch2 pointer to first array element and array size
  */
 typedef struct {
     int* array;
@@ -299,7 +294,7 @@ IntArray* filterExclusive(int first[], int firstSize, int second[], int secondSi
     for (int i = 0; i < firstSize; ++i) {
         value = first[i];
 
-        if (!contains(second, secondSize, value)) {
+        if (!binarySearch1(second, secondSize, value)) {
             if (size == threshold) {
                 exclusives = realloc(exclusives, threshold <<= 1);
             }
@@ -430,10 +425,10 @@ IntPair* createIntPair(int left, int right) {
  * @param array array for searching
  * @param size array size
  * @param value value for searching
- * @return null pointer if array contains value and pair of nearest values for provided value otherwise
+ * @return null pointer if array binarySearch1 value and pair of nearest values for provided value otherwise
  */
 IntPair* findNearsIfValueNotExists(int array[], int size, int value) {
-    if (contains(array, size, value)) {
+    if (binarySearch1(array, size, value)) {
         return NULL;
     }
 
@@ -521,13 +516,13 @@ bool canBeGeometricProgression(int array[], int size) {
 }
 
 /**
- * calculates sum of even digits of array elements
+ * calculates sumLL of even digits of array elements
  * @param array array for calculation
  * @param size array size
- * @return sum of even digits of array elements
+ * @return sumLL of even digits of array elements
  */
 int sumOfEvenDigits(int array[], int size) {
-    int sum = 0, value, digit;
+    int sumLL = 0, value, digit;
 
     for (int i = 0; i < size; ++i) {
         value = array[i];
@@ -537,10 +532,10 @@ int sumOfEvenDigits(int array[], int size) {
             value /= 10;
 
             if ((digit & 1) == 0) {
-                sum += digit;
+                sumLL += digit;
             }
         }
     }
 
-    return sum;
+    return sumLL;
 }

@@ -38,12 +38,12 @@ void printArray(int array[], int size) {
 
 /**
  * searches target value in provided array and returns index of first result
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @param value target value
  * @return index of the first element equal to target
 */
-int indexOf(int array[], int size, int value) {
+int binarySearch1(int array[], int size, int value) {
     for (int i = 0; i < size; ++i) {
         if (array[i] == value) {
             return i;
@@ -55,7 +55,7 @@ int indexOf(int array[], int size, int value) {
 
 /**
  * searches negative value in provided array and returns index of first result
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @return index of the first negative element
 */
@@ -71,7 +71,7 @@ int indexOfNegative(int array[], int size) {
 
 /**
  * searches for value satisfying the predicate in provided array and returns index of first result
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @param value target value
  * @return index of the first element satisfying the predicate
@@ -88,7 +88,7 @@ int indexOfByPredicate(int array[], int size, bool (*predicate)(int)) {
 
 /**
  * searches for an even element from the end of the provided array
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @return index of the last even element
 */
@@ -104,7 +104,7 @@ int lastIndexOfEven(int array[], int size) {
 
 /**
  * searches for value from the end of the array satisfying the predicate and returns index of first result
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @param predicate predicate to check elements
  * @return index of the last element satisfying the predicate
@@ -121,7 +121,7 @@ int lastIndexOfByPredicate(int array[], int size, bool (*predicate)(int)) {
 
 /**
  * counts negative elements in the provided array
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @return amount of negative elements in the provided array
 */
@@ -139,7 +139,7 @@ int countNegative(int array[], int size) {
 
 /**
  * counts elements which satisfies the predicate in the provided array
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param size array size
  * @return amount of elements which satisfies the predicate in the provided array
 */
@@ -191,7 +191,7 @@ bool isPalindrome(int array[], int size) {
 
 /**
  * searches max element in the array and returns index of that element
- * @param array the array in which the search will be performed
+ * @param array the array in which the binarySearch3 will be performed
  * @param offset start index
  * @param size array size
  * @return index of array max element
@@ -215,7 +215,7 @@ int indexOfMax(int array[], int offset, int size) {
  * @param first first value pointer
  * @param second second value pointer
 */
-void swap(int* first, int* second) {
+void swapDouble(int* first, int* second) {
     int firstValue = *first;
 
     *first = *second;
@@ -231,7 +231,7 @@ void sort(int array[], int size) {
     int offset = 0;
 
     for (int i = 0; i < size; ++i) {
-        swap(array + offset, array + indexOfMax(array, offset, size));
+        swapDouble(array + offset, array + indexOfMax(array, offset, size));
         offset++;
     }
 }
