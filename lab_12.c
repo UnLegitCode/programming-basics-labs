@@ -320,61 +320,88 @@ int lcm(const int a, const int b) {
 }
 
 void simpleFraction(Fraction* fraction) {
+    if (fraction->denumerator < 0) {
+        fraction->numerator = -fraction->numerator;
+        fraction->denumerator = -fraction->denumerator;
+    }
+
     const int fractionGcd = gcd(fraction->numerator, fraction->denumerator);
 
     fraction->numerator /= fractionGcd;
     fraction->denumerator /= fractionGcd;
 }
 
-Fraction multiplyFractions(const Fraction first, const Fraction second) {
-    const int numerator = first.numerator * second.numerator;
-    const int denumerator = first.denumerator * second.denumerator;
-    const int fractionGcd = gcd(numerator, denumerator);
+void handleOverflow() {
+    printf("Overflow");
+    exit(1);
+}
 
+Fraction multiplyFractions(Fraction first, Fraction second) {
+    simpleFraction(&first);
+    simpleFraction(&second);
+
+    if ((INT_MAX / abs(first.numerator)) < abs(second.numerator)) {
+        handleOverflow();
+    }
+
+    Fraction multiplication = {
+            first.numerator * second.numerator,
+            first.denumerator * second.denumerator
+    };
+
+    simpleFraction(&multiplication);
+
+    return multiplication;
+}
+
+Fraction reversed(const Fraction fraction) {
     return (Fraction) {
-            numerator / fractionGcd,
-            denumerator / fractionGcd
+        fraction.denumerator,
+        fraction.numerator
     };
 }
 
-Fraction divideFractions(const Fraction first, const Fraction second) {
-    const int numerator = first.numerator * second.denumerator;
-    const int denumerator = first.denumerator * second.numerator;
-    const int fractionGcd = gcd(numerator, denumerator);
-
-    return (Fraction) {
-        numerator / fractionGcd,
-        denumerator / fractionGcd
-    };
+Fraction divideFractions(const Fraction first, Fraction second) {
+    return multiplyFractions(first, reversed(second));
 }
 
-Fraction addFractions(const Fraction first, const Fraction second) {
+Fraction addFractions(Fraction first, Fraction second) {
+    simpleFraction(&first);
+    simpleFraction(&second);
+
+    if (first.numerator > 0 && second.numerator > 0) {
+        if ((INT_MAX - first.numerator) < second.numerator) {
+            handleOverflow();
+        }
+    } else if (first.numerator < 0 && second.numerator < 0 && (INT_MIN + first.numerator) > second.numerator) {
+        handleOverflow();
+    }
+
     const int denumerator = lcm(first.denumerator, second.denumerator);
-    const int numerator = first.numerator * denumerator / first.denumerator + second.numerator * denumerator / second.denumerator;
-    const int fractionGcd = gcd(numerator, denumerator);
 
-    return (Fraction) {
-            numerator / fractionGcd,
-            denumerator / fractionGcd
+    Fraction result = {
+            first.numerator * denumerator / first.denumerator + second.numerator * denumerator / second.denumerator,
+            denumerator
     };
+
+    simpleFraction(&result);
+
+    return result;
 }
 
-Fraction subtractFractions(const Fraction first, const Fraction second) {
-    const int denumerator = lcm(first.denumerator, second.denumerator);
-    const int numerator = first.numerator * denumerator / first.denumerator - second.numerator * denumerator / second.denumerator;
-    const int fractionGcd = gcd(numerator, denumerator);
+Fraction subtractFractions(const Fraction first, Fraction second) {
+    second.numerator = -second.numerator;
 
-    return (Fraction) {
-        numerator / fractionGcd,
-        denumerator / fractionGcd
-    };
+    return addFractions(first, second);
 }
 
-Fraction sumFractions(const Fraction* fractions, const int size) {
+Fraction sumFractions(Fraction* fractions, const int size) {
     int numerator = 0,
         denumerator = 1;
 
     for (int i = 0; i < size; ++i) {
+        simpleFraction(fractions + i);
+
         const Fraction fraction = fractions[i];
 
         numerator = (numerator * fraction.denumerator) + (fraction.numerator * denumerator);
@@ -468,4 +495,93 @@ Timestamp timestampFromSeconds(const int seconds) {
 
 Timestamp getDelay(const Timestamp from, const Timestamp to) {
     return timestampFromSeconds(getSeconds(from) - getSeconds(to));
+}
+
+typedef struct {
+    int x;
+    int y;
+} IntPoint;
+
+void inputIntPoint(IntPoint* point) {
+    scanf("(%d; %d)", &point->x, &point->y);
+}
+
+typedef struct {
+    IntPoint leftBottom;
+    IntPoint rightTop;
+} Rectangle;
+
+int getWidth(const Rectangle rectangle) {
+    return rectangle.rightTop.x - rectangle.leftBottom.x;
+}
+
+int getHeight(const Rectangle rectangle) {
+    return rectangle.rightTop.y - rectangle.leftBottom.y;
+}
+
+void inputRectangle(Rectangle* rectangle) {
+    inputIntPoint(&rectangle->leftBottom);
+    inputIntPoint(&rectangle->rightTop);
+}
+
+void outputRectangle(const Rectangle rectangle) {
+    printf("(%d; %d) (%d; %d)", rectangle.leftBottom.x, rectangle.leftBottom.y, rectangle.rightTop.x, rectangle.rightTop.y);
+}
+
+bool isSquare(const Rectangle rectangle) {
+    return getWidth(rectangle) == getHeight(rectangle);
+}
+
+bool isIntersects(const Rectangle rect1, const Rectangle rect2) {
+    return (rect1.leftBottom.x <= rect2.rightTop.x && rect2.leftBottom.x <= rect1.rightTop.x) ||
+           (rect1.leftBottom.y <= rect2.rightTop.y && rect2.leftBottom.y <= rect1.rightTop.y);
+}
+
+Rectangle getIntersection(const Rectangle rect1, const Rectangle rect2) {
+    Rectangle overlap = { 0, 0, 0, 0 };
+
+    if (isIntersects(rect1, rect2)) {
+        if (rect1.leftBottom.x < rect2.leftBottom.x) {
+            overlap.leftBottom.x = rect2.leftBottom.x;
+            overlap.rightTop.x = rect1.rightTop.x;
+        } else {
+            overlap.leftBottom.x = rect1.leftBottom.x;
+            overlap.rightTop.x = rect2.rightTop.x;
+        }
+        if (rect1.leftBottom.y < rect2.leftBottom.y) {
+            overlap.leftBottom.y = rect2.leftBottom.y;
+            overlap.rightTop.y = rect1.rightTop.y;
+        } else {
+            overlap.leftBottom.y = rect1.leftBottom.y;
+            overlap.rightTop.y = rect2.rightTop.y;
+        }
+    }
+
+    return overlap;
+}
+
+int getSquare(const Rectangle rectangle) {
+    return getWidth(rectangle) * getHeight(rectangle);
+}
+
+int getIntersectionSquare(const Rectangle rect1, const Rectangle rect2) {
+    return getSquare(getIntersection(rect1, rect2));
+}
+
+bool isEmpty(const Rectangle rectangle) {
+    return rectangle.leftBottom.x == 0 && rectangle.leftBottom.y == 0 && rectangle.rightTop.x == 0 && rectangle.rightTop.y == 0;
+}
+
+Rectangle getSharedIntersection(const Rectangle* rectangles, const int size) {
+    Rectangle overlap = getIntersection(rectangles[0], rectangles[1]);
+
+    for (int i = 2; i < size && !isEmpty(overlap); ++i) {
+        overlap = getIntersection(rectangles[i], overlap);
+    }
+
+    return overlap;
+}
+
+int getSharedIntersectionSquare(const Rectangle* rectangles, const int size) {
+    return getSquare(getSharedIntersection(rectangles, size));
 }
